@@ -4,6 +4,9 @@
 instance/
 __pycache__/
 *.pyc
+<<<<<<< HEAD
 .pytest_cache/
+=======
+>>>>>>> c32575c (chore: fix .gitignore to properly exclude generated files)
 .venv/
 venv/
