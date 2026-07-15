@@ -33,3 +33,13 @@ Most users aren't thinking about privacy in the moment when they casually add a 
 
 **Tradeoff acknowledged:**
 The real cost of a public default is that some users will end up sharing their watchlist without having consciously decided to. I think this is an acceptable tradeoff here specifically because a watchlist reveals intent, not confirmed behavior — it's a lower-stakes signal than, say, a viewing history or rating. Combined with the fact that an opt-out is always available, I don't think the risk outweighs the benefit to the social feature.
+
+## Comment 5 — Sort order
+**My position:**
+`get_watchlist()` should sort by `date_added` descending (most recently added first), replacing the current alphabetical sort by `Film.title`.
+
+**Reasoning:**
+A watchlist works best as a signal of what's currently on someone's mind, not a static alphabetical index. Sorting by when a film was *added* (rather than the film's own release year) keeps the list relevant to ongoing conversation — if a friend adds an older film they just discovered, it surfaces at the top because that's what's fresh right now, which supports the social use case of talking about what people are currently excited to watch.
+
+**Engagement with reviewer's point:**
+This also brings `get_watchlist()` in line with the pattern already used in `get_collection()`, which sorts by `date_added.desc()`. Beyond consistency, though, I think newest-first is the right choice on its own merits for a watchlist specifically — alphabetical sorting is easy to scan but tells you nothing about relevance, and oldest-first would bury exactly the entries people are most likely to want to discuss. A more complete version of this feature could offer alphabetical/oldest-first as optional sort parameters later, but for the default behavior, newest-added-first best serves how people actually use a shared watchlist.
