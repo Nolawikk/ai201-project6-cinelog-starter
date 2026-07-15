@@ -60,21 +60,20 @@ The rebase then completed without further conflicts being flagged — but runnin
 **How I verified no conflict remains:**
 After restoring `WatchlistEntry`, I re-ran `python -c "from models import WatchlistEntry; print(WatchlistEntry)"` to confirm the import succeeded, then ran the full test suite (`pytest tests/ -v`) and confirmed all 5 tests passed. This experience reinforced that a rebase completing without git reporting a conflict doesn't guarantee correctness — running the actual test suite afterward is what caught the real problem.
 
-PR Description:
+## PR Description
 
-What this PR does
+### What this PR does
 Adds a watchlist feature to CineLog, letting users save films they want to watch later, separate from their collection of already-watched films. Includes endpoints to view a user's watchlist and add a film to it.
 
-Design decisions
-Default visibility: New watchlist entries default to public=True. Most users aren't thinking about privacy when casually adding a film, and a public default keeps the social side of the feature functional. Users can still opt out and make entries private.
-Sort order: get_watchlist() sorts by date_added descending (most recent first), rather than alphabetically by title. This keeps the list relevant to what's currently being discussed or added, rather than acting as a static index.
-How to test manually
-Start the app: python app.py
-Create a user and film via the existing endpoints (or reference the test fixtures in tests/test_watchlist.py for the expected shape of the data).
-Add a film to a user's watchlist:
-View the watchlist:
-Confirm films appear sorted by most-recently-added first, not alphabetically.
-Try adding the same film to the same user's watchlist twice — confirm it raises an error (AlreadyInWatchlistError) instead of creating a duplicate entry.
-Try adding a nonexistent film_id — confirm it raises FilmNotFoundError.
-Design decision commentary
-See pr-response.md in the repo root for the full written responses to all six review comments, including the reasoning behind both design decisions above, the rebase process, and how testing caught a silent conflict during the rebase.
+### Design decisions
+- **Default visibility**: New watchlist entries default to `public=True`. Most users aren't thinking about privacy when casually adding a film, and a public default keeps the social side of the feature functional. Users can still opt out and make entries private.
+- **Sort order**: `get_watchlist()` sorts by `date_added` descending (most recent first), rather than alphabetically by title. This keeps the list relevant to what's currently being discussed or added, rather than acting as a static index.
+
+### How to test manually
+1. Start the app: `python app.py`
+2. Create a user and film via the existing endpoints (or reference the test fixtures in `tests/test_watchlist.py` for the expected shape of the data).
+3. Add a film to a user's watchlist:
+4. View the watchlist: `GET /watchlist/<user_id>`
+5. Confirm films appear sorted by most-recently-added first, not alphabetically.
+6. Try adding the same film to the same user's watchlist twice — confirm it raises an error (`AlreadyInWatchlistError`) instead of creating a duplicate entry.
+7. Try adding a nonexistent `film_id` — confirm it raises `FilmNotFoundError`.
