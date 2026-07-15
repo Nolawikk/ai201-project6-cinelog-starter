@@ -1,7 +1,11 @@
 # PR Response Doc — CineLog Watchlist Feature
 
 ## AI Usage
-<!-- Fill in at the end -->
+I used AI assistance throughout this project for:
+- **Orientation**: understanding what `add_to_collection()`, the test fixtures, and the naming conventions in `collection_service.py` did before touching the watchlist code, so I could mirror the existing patterns correctly.
+- **Debugging**: diagnosing several Windows/PowerShell-specific issues (venv activation, file renaming, a rebase auto-merge that silently dropped the `WatchlistEntry` class from `models.py` without flagging a conflict) and syntax errors introduced by editor/terminal paste issues.
+- **Stress-testing Comments 4 and 5**: I drafted my own initial position for both the default visibility and sort order decisions, and used AI as a devil's advocate to push back on gaps in my reasoning (e.g., challenging whether "most social apps default to public" was actually specific to CineLog, and clarifying whether my sort-order argument applied to `date_added` vs. the film's own release year). My final responses in Comments 4 and 5 are my own reasoning — the AI's role was to raise counterarguments I then had to answer, not to write the arguments itself.
+- **Commit hygiene**: reviewing my `git log --oneline` output to confirm all commits followed conventional commit format before finalizing.
 
 ## Comment 1 — Rename
 **What I did:**
@@ -55,3 +59,22 @@ The rebase then completed without further conflicts being flagged — but runnin
 
 **How I verified no conflict remains:**
 After restoring `WatchlistEntry`, I re-ran `python -c "from models import WatchlistEntry; print(WatchlistEntry)"` to confirm the import succeeded, then ran the full test suite (`pytest tests/ -v`) and confirmed all 5 tests passed. This experience reinforced that a rebase completing without git reporting a conflict doesn't guarantee correctness — running the actual test suite afterward is what caught the real problem.
+
+PR Description:
+
+What this PR does
+Adds a watchlist feature to CineLog, letting users save films they want to watch later, separate from their collection of already-watched films. Includes endpoints to view a user's watchlist and add a film to it.
+
+Design decisions
+Default visibility: New watchlist entries default to public=True. Most users aren't thinking about privacy when casually adding a film, and a public default keeps the social side of the feature functional. Users can still opt out and make entries private.
+Sort order: get_watchlist() sorts by date_added descending (most recent first), rather than alphabetically by title. This keeps the list relevant to what's currently being discussed or added, rather than acting as a static index.
+How to test manually
+Start the app: python app.py
+Create a user and film via the existing endpoints (or reference the test fixtures in tests/test_watchlist.py for the expected shape of the data).
+Add a film to a user's watchlist:
+View the watchlist:
+Confirm films appear sorted by most-recently-added first, not alphabetically.
+Try adding the same film to the same user's watchlist twice — confirm it raises an error (AlreadyInWatchlistError) instead of creating a duplicate entry.
+Try adding a nonexistent film_id — confirm it raises FilmNotFoundError.
+Design decision commentary
+See pr-response.md in the repo root for the full written responses to all six review comments, including the reasoning behind both design decisions above, the rebase process, and how testing caught a silent conflict during the rebase.
