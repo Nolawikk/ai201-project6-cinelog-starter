@@ -60,6 +60,8 @@ The rebase then completed without further conflicts being flagged — but runnin
 **How I verified no conflict remains:**
 After restoring `WatchlistEntry`, I re-ran `python -c "from models import WatchlistEntry; print(WatchlistEntry)"` to confirm the import succeeded, then ran the full test suite (`pytest tests/ -v`) and confirmed all 5 tests passed. This experience reinforced that a rebase completing without git reporting a conflict doesn't guarantee correctness — running the actual test suite afterward is what caught the real problem.
 
+## Commit History
+![git log --oneline showing conventional commits, no merge commits](git-log.png)
 ## PR Description
 
 ### What this PR does
@@ -77,3 +79,4 @@ Adds a watchlist feature to CineLog, letting users save films they want to watch
 5. Confirm films appear sorted by most-recently-added first, not alphabetically.
 6. Try adding the same film to the same user's watchlist twice — confirm it raises an error (`AlreadyInWatchlistError`) instead of creating a duplicate entry.
 7. Try adding a nonexistent `film_id` — confirm it raises `FilmNotFoundError`.
+
