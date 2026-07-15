@@ -43,3 +43,15 @@ A watchlist works best as a signal of what's currently on someone's mind, not a 
 
 **Engagement with reviewer's point:**
 This also brings `get_watchlist()` in line with the pattern already used in `get_collection()`, which sorts by `date_added.desc()`. Beyond consistency, though, I think newest-first is the right choice on its own merits for a watchlist specifically — alphabetical sorting is easy to scan but tells you nothing about relevance, and oldest-first would bury exactly the entries people are most likely to want to discuss. A more complete version of this feature could offer alphabetical/oldest-first as optional sort parameters later, but for the default behavior, newest-added-first best serves how people actually use a shared watchlist.
+
+## Comment 6 — Rebase
+**What conflicted:**
+Running `git rebase origin/main` produced an add/add conflict in `.gitignore` — both my branch and `main` had independently added a `.gitignore` file with overlapping but not identical entries (my version was missing `.pytest_cache/`, which `main`'s version included).
+
+**How I resolved it:**
+I merged both versions into a single `.gitignore` containing all the ignored patterns from each side, staged it, and continued the rebase with `git rebase --continue`.
+
+The rebase then completed without further conflicts being flagged — but running the test suite afterward (`pytest tests/ -v`) revealed that the auto-merge had silently dropped the entire `WatchlistEntry` class from `models.py` during one of the replayed commits, without git ever reporting it as a conflict. I confirmed this with `python -c "from models import WatchlistEntry"`, which failed with an `ImportError`. I restored the class manually, updating `film_id` from `db.Integer` to `db.String(36)` to match the UUID refactor that had merged into `main` while my PR was open.
+
+**How I verified no conflict remains:**
+After restoring `WatchlistEntry`, I re-ran `python -c "from models import WatchlistEntry; print(WatchlistEntry)"` to confirm the import succeeded, then ran the full test suite (`pytest tests/ -v`) and confirmed all 5 tests passed. This experience reinforced that a rebase completing without git reporting a conflict doesn't guarantee correctness — running the actual test suite afterward is what caught the real problem.
